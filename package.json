@@ -5,11 +5,13 @@
   "main": "index.js",
   "scripts": {
     "dev": "vuepress dev docs",
-    "build": "vuepress build docs"
+    "build": "vuepress build docs",
+    "upload": "./node_modules/.bin/server-upload"
   },
   "author": "zxj",
   "license": "ISC",
   "devDependencies": {
+    "server-upload": "^0.0.1",
     "vuepress": "^1.2.0"
   }
 }
