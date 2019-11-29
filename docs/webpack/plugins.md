@@ -49,7 +49,7 @@ clean-webpack-plugin 默认删除 output 的输出目录
 
 ## 去除无用 CSS
 
-- PurifyCss:遍历代码，识别已经用到的 CSS class（不在维护）
+- PurifyCss：遍历代码，识别已经用到的 CSS class（不在维护）
 - purgess-webpack-plugin 和 mini-css-extract-plugin 配合使用在 webpack4 中
 - uncss：HTML 需要通过 jsDom 加载，所有的样式通过 PostCss 解析，通过 document.querySelector 来识别在 html 文件里面不存在的选择器
 
@@ -81,7 +81,7 @@ clean-webpack-plugin 默认删除 output 的输出目录
 
 ## 基础库分离
 
-- html-webpack-externals-plugin:用于 cdn
+- html-webpack-externals-plugin：用于 cdn
 - splitChunksPlugin
 
 ## 打包速度分析
