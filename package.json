@@ -8,9 +8,15 @@
     "build": "vuepress build docs",
     "upload": "./node_modules/.bin/server-upload"
   },
+  "husky": {
+    "hooks": {
+      "pre-push": "server-upload"
+    }
+  },
   "author": "zxj",
   "license": "ISC",
   "devDependencies": {
+    "husky": "^3.1.0",
     "server-upload": "^0.0.1",
     "vuepress": "^1.2.0"
   }
