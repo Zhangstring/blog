@@ -10,7 +10,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-push": "server-upload"
+      "post-receive": "server-upload"
     }
   },
   "author": "zxj",
