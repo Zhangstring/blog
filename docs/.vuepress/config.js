@@ -24,6 +24,11 @@ function getSideBarChildren(title) {
     fileName = fileName.split('.')[0]
     return fileName === 'README' ? '' : fileName
   })
+  children.sort(function(m, n) {
+    var a = fs.statSync(sideBarPath + `/${m || 'README'}.md`)
+    var b = fs.statSync(sideBarPath + `/${n || 'README'}.md`)
+    return a.btime - b.btime
+  })
   return [
     {
       title: title,

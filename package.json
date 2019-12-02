@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "vuepress dev docs",
-    "build": "vuepress build docs",
-    "upload": "./node_modules/.bin/server-upload"
+    "build": "vuepress build docs"
   },
   "husky": {
     "hooks": {
