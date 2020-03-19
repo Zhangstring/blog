@@ -4,6 +4,9 @@ module.exports = {
   title: 'zxj blog',
   description: 'my blog',
   lang: 'zh-CN',
+  markdown: {
+    lineNumbers: true
+  },
   themeConfig: {
     smoothScroll: true, // 页面滚动
     lastUpdated: '上次更新', // 更新时间
