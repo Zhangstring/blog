@@ -11,15 +11,233 @@ webpack 默认配置文件:webpack.config.js。可以通过 webpack --config 指
 
 - development
 
-设置 process.env.NODE_ENV 的值为 development，开启 NamedChunkPlugin 和 NamedModulesPlugin
+  - 开启 NamedChunkPlugin（固化 chunk id）
+  - NamedModulesPlugin（固化 module id）
+
+相当于默认内置了
+
+```js
+// webpack.dev.config.js
+module.exports = {
+  devtool: 'eval',
+  cache: true,
+  performance: {
+    // 性能设置,文件打包过大时，不报错和警告，只做提示
+    hints: false
+  },
+  output: {
+    // 打包时，在包中包含所属模块的信息的注释
+    pathinfo: true
+  },
+  optimization: {
+    // 使用可读的模块标识符进行调试
+    namedModules: true,
+    // 使用可读的块标识符进行调试
+    namedChunks: true,
+    // 设置 process.env.NODE_ENV 为 development
+    nodeEnv: 'development',
+    // 不标记块是否是其它块的子集
+    flagIncludedChunks: false,
+    // 不标记模块的加载顺序
+    occurrenceOrder: false,
+    // 不启用副作用
+    sideEffects: false,
+    usedExports: false,
+    concatenateModules: false,
+    splitChunks: {
+      hidePathInfo: false,
+      minSize: 10000,
+      maxAsyncRequests: Infinity,
+      maxInitialRequests: Infinity
+    },
+    // 当打包时，遇到错误编译，仍把打包文件输出
+    noEmitOnErrors: false,
+    checkWasmTypes: false,
+    // 不使用 optimization.minimizer || TerserPlugin 来最小化包
+    minimize: false,
+    removeAvailableModules: false
+  },
+  plugins: [
+    // 当启用 HMR 时，使用该插件会显示模块的相对路径
+    // 建议用于开发环境
+    new webpack.NamedModulesPlugin(),
+    // webpack 内部维护了一个自增的 id，每个 chunk 都有一个 id。
+    // 所以当增加 entry 或者其他类型 chunk 的时候，id 就会变化，
+    // 导致内容没有变化的 chunk 的 id 也发生了变化
+    // NamedChunksPlugin 将内部 chunk id 映射成一个字符串标识符（模块的相对路径）
+    // 这样 chunk id 就稳定了下来
+    new webpack.NamedChunksPlugin(),
+    // 定义环境变量
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify('development')
+    })
+  ]
+}
+```
 
 - production
 
-设置 process.env.NODE_ENV 的值为 production，开启 FlagDependencyUsagePlugin，FlagIncludedChunksPlugin，ModuleConcatenationPlugin，NoEmitOnErrorPlugin，OccurrenceOrderPlugin，SideEffectsFlagPlugin 和 TerserPlugin
+  - 开启 FlagDependencyUsagePlugin（编译时标记依赖），
+  - FlagIncludedChunksPlugin（标记子 chunks，防子 chunks 多次加载），
+  - ModuleConcatenationPlugin（作用域提升(scope hosting),预编译功能,提升或者预编译所有模块到一个闭包中，提升代码在浏览器中的执行速度），
+  - NoEmitOnErrorPlugin（在输出阶段时，遇到编译错误跳过），
+  - OccurrenceOrderPlugin（给经常使用的 ids 更短的值），
+  - SideEffectsFlagPlugin（识别 package.json 或者 module.rules 的 sideEffects 标志（纯的 ES2015 模块)，安全地删除未用到的 export 导出）
+  - TerserPlugin（压缩 js 代码）
+
+相当于默认内置了
+
+```js
+module.exports = {
+  performance: {
+    // 性能设置,文件打包过大时，会报警告
+    hints: 'warning'
+  },
+  output: {
+    // 打包时，在包中不包含所属模块的信息的注释
+    pathinfo: false
+  },
+  optimization: {
+    // 不使用可读的模块标识符进行调试
+    namedModules: false,
+    // 不使用可读的块标识符进行调试
+    namedChunks: false,
+    // 设置 process.env.NODE_ENV 为 production
+    nodeEnv: 'production',
+    // 标记块是否是其它块的子集
+    // 控制加载块的大小（加载较大块时，不加载其子集）
+    flagIncludedChunks: true,
+    // 标记模块的加载顺序，使初始包更小
+    occurrenceOrder: true,
+    // 启用副作用
+    sideEffects: true,
+    // 确定每个模块的使用导出，
+    // 不会为未使用的导出生成导出
+    // 最小化的消除死代码
+    // optimization.usedExports 收集的信息将被其他优化或代码生成所使用
+    usedExports: true,
+    // 查找模块图中可以安全的连接到其它模块的片段
+    concatenateModules: true,
+    // SplitChunksPlugin 配置项
+    splitChunks: {
+      // 默认 webpack4 只会对按需加载的代码做分割
+      chunks: 'async',
+      // 表示在压缩前的最小模块大小,默认值是30kb
+      minSize: 30000,
+      minRemainingSize: 0,
+      // 旨在与HTTP/2和长期缓存一起使用
+      // 它增加了请求数量以实现更好的缓存
+      // 它还可以用于减小文件大小，以加快重建速度。
+      maxSize: 0,
+      // 分割一个模块之前必须共享的最小块数
+      minChunks: 1,
+      // 按需加载时的最大并行请求数
+      maxAsyncRequests: 6,
+      // 入口的最大并行请求数
+      maxInitialRequests: 4,
+      // 界定符
+      automaticNameDelimiter: '~',
+      // 块名最大字符数
+      automaticNameMaxLength: 30,
+      cacheGroups: {
+        // 缓存组
+        vendors: {
+          test: /[\\/]node_modules[\\/]/,
+          priority: -10
+        },
+        default: {
+          minChunks: 2,
+          priority: -20,
+          reuseExistingChunk: true
+        }
+      }
+    },
+    // 当打包时，遇到错误编译，将不会把打包文件输出
+    // 确保 webpack 不会输入任何错误的包
+    noEmitOnErrors: true,
+    checkWasmTypes: true,
+    // 使用 optimization.minimizer || TerserPlugin 来最小化包
+    minimize: true
+  },
+  plugins: [
+    // 使用 terser 来优化 JavaScript
+    new TerserPlugin(/* ... */),
+    // 定义环境变量
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify('production')
+    }),
+    // 预编译所有模块到一个闭包中，提升代码在浏览器中的执行速度
+    new webpack.optimize.ModuleConcatenationPlugin(),
+    // 在编译出现错误时，使用 NoEmitOnErrorsPlugin 来跳过输出阶段。
+    // 这样可以确保输出资源不会包含错误
+    new webpack.NoEmitOnErrorsPlugin()
+  ]
+}
+```
 
 - none
 
-不开启任何优化选项
+  - 不开启任何优化选项
+
+相当于内置了
+
+```js
+module.exports = {
+  performance: {
+    // 性能设置,文件打包过大时，不报错和警告，只做提示
+    hints: false
+  },
+  optimization: {
+    // 不标记块是否是其它块的子集
+    flagIncludedChunks: false,
+    // 不标记模块的加载顺序
+    occurrenceOrder: false,
+    // 不启用副作用
+    sideEffects: false,
+    usedExports: false,
+    concatenateModules: false,
+    splitChunks: {
+      hidePathInfo: false,
+      minSize: 10000,
+      maxAsyncRequests: Infinity,
+      maxInitialRequests: Infinity
+    },
+    // 当打包时，遇到错误编译，仍把打包文件输出
+    noEmitOnErrors: false,
+    checkWasmTypes: false,
+    // 不使用 optimization.minimizer || TerserPlugin 来最小化包
+    minimize: false
+  },
+  plugins: []
+}
+```
+
+三种模式对比
+
+|                                                                                                                                            mode                                                                                                                                             |                                  production                                   |                        development                        | none |
+| :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------: | :-------------------------------------------------------: | :--: |
+|                                                                                                                                    process.env.NODE_ENV                                                                                                                                     |                                  production                                   |                        development                        | none |
+|                                                                                                                      devtool（控制是否⽣成，以及如何⽣成 source map）                                                                                                                       |                                      no                                       |       eval (打包更慢，包体积更大；但更好的调试体验)       |  no  |
+|                                                                                                     cache（缓存模块，避免在未更改时重新构建它们，改善构建速度，只在 watch 模式下有⽤）                                                                                                      |                                      no                                       |            yes（内存占⽤更多；更快的增量打包）            |  no  |
+|                                                                                                                        output.pathinfo(输出包中是否包含模块注释信息)                                                                                                                        |                                      no                                       |    yes(包更大，并且泄露路径信息；提高了包代码的可读性)    |  no  |
+|                                                                                                                                    performance(性能设置)                                                                                                                                    |                       yes（算法成本；包过大时，会警告）                       |                            no                             |  no  |
+|                                                                                                       optimization.removeAvailableModules（删除已可⽤模块； 算法成本；减⼩包体积；）                                                                                                        |                                      yes                                      |                            yes                            | yes  |
+|                                                                                                             optimization.removeEmptyChunks（删除空模块;算法成本；减⼩包体积；）                                                                                                             |                                      yes                                      |                            yes                            | yes  |
+|                                                                                                        optimization.mergeDuplicateChunks（合并相等块;算法成本；更少的请求与下载；）                                                                                                         |                                      yes                                      |                            yes                            | yes  |
+|                                                                                         optimization.flagIncludedChunks（标记块是否是其它块的⼦集， 控制加载块的⼤⼩，加载较⼤块时，不加载其⼦集）                                                                                          |                      yes（算法成本；更少的请求与下载；）                      |                            no                             |  no  |
+|                                                                                                              optimization.occurrenceOrder（标记模块的加载顺序，使初始包更⼩）                                                                                                               |                        yes（算法成本；更⼩的包体积；）                        |                            no                             |  no  |
+|                                                                                               optimization.providedExports（尽可能确定每个模块的导出信息;算法成本；包体积及其它优化的需求；）                                                                                               |                                      yes                                      |                            yes                            | yes  |
+|                                                                                           optimization.usedExports(不会为未使⽤的导出⽣成导出，最⼩化的消除死代码，可被其他优化或代码⽣成所使⽤)                                                                                            |                         yes(算法成本；更⼩的包体积；)                         |                            no                             |  no  |
+| optimization.sideEffects（识别 package.json 或者 module.rules 的 sideEffects 标志（纯的 ES2015 模块)，安全地删除未⽤到的 export 导出。 这取决于 optimization.providedExports 和 optimization.usedExports。 这些依赖性有⼀定的成本，但是由于减少了代码⽣成，因此消除模块会对能产⽣积极影响） |                  yes(算法成本；更⼩的包体积；更小的代码生产)                  |                                                           |  no  |
+|                                                                        optimization.concatenateModules(查找模块图中可以安全的连接到其它模块的⽚段，取决于 optimization.providedExports 和 optimization.usedExports)                                                                         | yes(额外的解析，范围分析和标识符重命名（性能）；提升运⾏时性能，减⼩包⼤⼩；) |                            no                             |  no  |
+|                                                                                 optimization.splitChunks(拆分块，默认只针对异步块进⾏拆分； 算法成本，额外的请求；更少的代码⽣成，更好的缓存，更少的下载；)                                                                                 |                                      yes                                      |                            yes                            | yes  |
+|                                                                                optimization.runtimeChunk(为 webpack 运⾏时代码和块清单创建⼀个单独的块。该块应内联到 HTML 中;更⼤的 HTML ⽂件；更好的缓存；)                                                                                |                                      yes                                      |                            yes                            | yes  |
+|                                                                                                                      optimization.noEmitOnErrors(不输出编译错误的包）)                                                                                                                      |                       yes(⽆法使⽤应⽤程序的⼯作部分；)                       |                            no                             |  no  |
+|                                                                                                                       optimization.nameModules(以名称固化 module id)                                                                                                                        |                                      no                                       |          yes(更⼤包体积；更好的错误报告和调试；)          |  no  |
+|                                                                                                                        optimization.namedChunks(以名称固化 chunk id)                                                                                                                        |                                      no                                       |          yes(更⼤包体积；更好的错误报告和调试；)          |  no  |
+|                                                                                                                      optimization.nodeEnv（设置 process.env.NODE_ENV）                                                                                                                      |           production(区别开发环境与⽣产环境；包⼤⼩，运⾏时性能；)            | development(区别开发环境与⽣产环境；包⼤⼩，运⾏时性能；) |  no  |
+|                                                                                                       optimization.minimize(使⽤ optimization.minimizer 或者 TerserPlugin 来最⼩化包)                                                                                                       |                             yes( 更慢；包体积；)                              |                            no                             |  no  |
+|                                                                                              optimization.ModuleConcatenationPlugin(预编译所有模块到⼀个闭包中，提升代码在浏览器中的执⾏速度)                                                                                               |                                      yes                                      |                            no                             |  no  |
 
 ## Entry
 
@@ -27,30 +245,30 @@ webpack 默认配置文件:webpack.config.js。可以通过 webpack --config 指
 
 - 单入口
 
-```
-  module.exports = {
-    entry: "./src/index"
-  }
+```js
+module.exports = {
+  entry: './src/index'
+}
 ```
 
 - 多入口
 
-```
-  module.exports = {
-    entry: {
-      app: "./src/app.js",
-      index: "./src/index.js"
-    }
+```js
+module.exports = {
+  entry: {
+    app: './src/app.js',
+    index: './src/index.js'
   }
+}
 ```
 
 - 多页面打包
 
 每个页面对于一个 entry，一个 html-webpack-plugin，动态获取 entry，设置 html-webpack-plugin 数量，利用 glob.sync
 
-```
+```js
 module.exports = {
-  entry: glob.sync(path.join(__dirname, "./src/*/index.js"))
+  entry: glob.sync(path.join(__dirname, './src/*/index.js'))
 }
 ```
 
