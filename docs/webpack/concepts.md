@@ -424,3 +424,41 @@ DCE（Elimination）
 
 - commonJS： require.ensure
 - es6：动态 import（原生不支持，需要 babel 转化，babel 插件：plugin-syntax-dynamic-import）
+
+## 模块化
+
+### UMD
+
+UMD (Universal Module Definition), 希望提供一个前后端跨平台的解决方案(支持 AMD 与 CommonJS 模块方式)。
+
+#### 实现原理
+
+- 先判断了是否支持 CommonJS(exports 和 module 是否存在)，支持则使用 CommonJS.
+- 然后判断了是否支持 AMD（define 是否存在）,支持使用 AMD 方式加载模块。
+- 最后都不支持以上模式，将模块挂在到全局上（global 或 window）。
+
+```js
+;(function(global, factory) {
+  typeof exports === 'object' && typeof module !== undefined
+    ? (module.exports = factory())
+    : typeof define === 'function' && defined.amd
+    ? define(factory)
+    : (global.name = factory())
+})(this, function() {
+  return {}
+})
+```
+
+### CommonJS 和 esm 区别
+
+主要区别：
+
+- CommonJS 模块是同步加载，esm 模块是异步加载
+- CommonJS 模块是值拷贝，esm 模块是值引用
+  - CommonJS 模块输出的是值的拷贝，也就是说，一旦输出一个值，模块内部的变化就影响不到这个值 。ES6 模块的运行机制与 CommonJS 不一样。JS 引擎对脚本静态分析的时候，遇到模块加载命令 import，就会生成一个只读引用。等到脚本真正执行时，再根据这个只读引用，到被加载的那个模块里面去取值。换句话说，ES6 的 import 有点像 Unix 系统的“符号连接”，原始值变了，import 加载的值也会跟着变。因此，ES6 模块是动态引用，并且不会缓存值，模块里面的变量绑定其所在的模块。
+- CommonJS 模块是运行时加载，esm 模块是编译时输出接口。
+  - 因为 CommonJS 加载的是一个对象（即 module.exports 属性），该对象只有在脚本运行完才会生成。而 ES6 模块不是对象，它的对外接口只是一种静态定义，在代码静态解析阶段就会生成
+- esm 的 import read-only 特性
+  - read-only 的特性很好理解，import 的属性是只读的，不能赋值，类似于 const 的特性，这里就不举例解释了。
+- esm 存在 export/import 提升
+  - esm 对于 import/export 存在提升的特性，具体表现是规范规定 import/export 必须位于模块顶级，不能位于作用域内；其次对于模块内的 import/export 会提升到模块顶部，这是在编译阶段完成的。
