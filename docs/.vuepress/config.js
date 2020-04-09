@@ -12,7 +12,7 @@ module.exports = {
     lastUpdated: '上次更新', // 更新时间
     nav: [
       { text: 'webpack', link: '/webpack/' },
-      { text: 'vue源码', link: '/vue/start/' },
+      { text: 'vue', link: '/vue/start/' },
       { text: 'react', link: '/react/' }
     ],
     sidebar: {
