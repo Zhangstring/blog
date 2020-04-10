@@ -31,6 +31,10 @@ module.exports = {
           {
             path: 'vmDom',
             title: '虚拟DOM'
+          },
+          {
+            path: 'compile',
+            title: '模版编译原理'
           }
         ]
       })
