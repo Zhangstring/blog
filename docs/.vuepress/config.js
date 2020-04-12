@@ -35,6 +35,10 @@ module.exports = {
           {
             path: 'compile',
             title: '模版编译原理'
+          },
+          {
+            path: 'all',
+            title: '整体流程'
           }
         ]
       })
