@@ -1,3 +1,3 @@
 # Blog
 
-Blog are available at https://blog.zhangxujun.cn/ 
+Blog are available at https://blog.zhangxujun.cn/

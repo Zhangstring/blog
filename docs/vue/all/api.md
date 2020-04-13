@@ -296,60 +296,6 @@ Vue.mixin 方法注册后，会影响之后创建的每个 Vue.js 实例，因�
 Vue.mixin = function(mixin: Object) {
   this.options = mergeOptions(this.options, mixin)
   return this
-
-  export function mergeOptions(
-    parent: Object,
-    child: Object,
-    vm?: Component
-  ): Object {
-    if (process.env.NODE_ENV !== 'production') {
-      // 检查是否是有效的组件名
-      checkComponents(child)
-    }
-
-    if (typeof child === 'function') {
-      child = child.options
-    }
-    // 确保所有props option序列化成正确的格式
-    normalizeProps(child, vm)
-    // 将所有注入规范化为基于对象的格式
-    normalizeInject(child, vm)
-    // 将函数指令序列化后加入对象
-    normalizeDirectives(child)
-
-    if (!child._base) {
-      // 将child的extends也加入parent扩展
-      if (child.extends) {
-        parent = mergeOptions(parent, child.extends, vm)
-      }
-      // child的mixins加入parent中
-      if (child.mixins) {
-        for (let i = 0, l = child.mixins.length; i < l; i++) {
-          parent = mergeOptions(parent, child.mixins[i], vm)
-        }
-      }
-    }
-
-    const options = {}
-    let key
-    // 合并parent与child
-    for (key in parent) {
-      mergeField(key)
-    }
-    for (key in child) {
-      if (!hasOwn(parent, key)) {
-        mergeField(key)
-      }
-    }
-    function mergeField(key) {
-      // strats里面存了options中每一个属性（el、props、watch等等）的合并方法，先取出
-      const strat = strats[key] || defaultStrat
-      // 根据合并方法来合并两个option
-      // strats的作用，如何合并两个数据
-      options[key] = strat(parent[key], child[key], vm, key)
-    }
-    return options
-  }
 }
 ```
 
