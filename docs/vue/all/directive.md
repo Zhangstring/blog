@@ -1,8 +1,10 @@
 # 指令
 
+在模版解析阶段，将指令解析到 AST，然后使用 AST 生成代码字符串的过程中实现某些内置指令的功能，最后在虚拟 DOM 渲染的过程中触发自定义指令的钩子函数使指令生效。
+
 ## v-if
 
-### ast
+### AST
 
 ```js
 // 匹配if属性，分别处理v-if、v-else以及v-else-if属性
@@ -75,7 +77,7 @@ function genIfConditions(
 
 ## v-for
 
-### ast
+### AST
 
 ```js
 // 匹配v-for属性
