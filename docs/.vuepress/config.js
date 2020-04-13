@@ -39,6 +39,10 @@ module.exports = {
           {
             path: 'all',
             title: '整体流程'
+          },
+          {
+            path: 'vueRouter',
+            title: 'Vue Router'
           }
         ]
       })
