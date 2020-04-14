@@ -43,11 +43,28 @@ module.exports = {
           {
             path: 'vueRouter',
             title: 'Vue Router'
+          },
+          {
+            path: 'vuex',
+            title: 'Vuex'
           }
         ]
       })
     }
-  }
+  },
+  plugins: [
+    [
+      'medium-zoom',
+      {
+        selector: '.preview',
+        delay: 1000,
+        options: {
+          bgColor: 'black',
+          zIndex: 10000
+        }
+      }
+    ]
+  ]
 }
 
 function getSideBarChildren(option) {

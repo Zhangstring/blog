@@ -1,4 +1,19 @@
-# 路由注册
+# Introduction
+
+随着 ajax 的流行，异步数据请求交互运行在不刷新浏览器的情况下进行。而异步交互体验的更高级版本就是 SPA —— 单页应用。单页应用不仅仅是在页面交互是无刷新的，连页面跳转都是无刷新的，为了实现单页应用，所以就有了前端路由。
+
+前端路由实现分为 2 种：
+
+- hash：`url` 上 `hash` 的变化，不会导致浏览器向服务器发出请求，浏览器不发出请求，也就不会刷新页面。每次 `hash` 的变化，会触发 `hashchange` 事件，可以通过监听 `hashchange` 来实现更新页面部分内容的操作。
+- history：`HTML5` 中通过 `History` 的 API 可以改变 url 地址且不会发送请求。相比较 `hash`，history 更加美观，但是由于用户刷新页面等操作，浏览器还是发送请求给服务器，如果服务器不设置重定向到根页面，会导致 404。
+
+流程图：
+
+<img class="preview" src="https://pic-1254114567.cos.ap-shanghai.myqcloud.com/blog/vue/vue%20router.png">
+
+<img class="preview" src="https://pic-1254114567.cos.ap-shanghai.myqcloud.com/blog/vue/vuerouter.png">
+
+## 路由注册
 
 `Vue-Router` 的入口文件是 `src/index.js`，其中定义了 `VueRouter` 类，也实现了 `install` 的静态方法：`VueRouter.install = install`，它的定义在 `src/install.js` 中。
 
@@ -34,6 +49,10 @@ export function install(Vue) {
         // 将当前Vue实例存储到VueRouter实例的apps上，如果是根组件，那么还会将根组件保存到this.app上并且会拿到当前的 this.history
         this._router.init(this)
         // 当前Vue实例定义_route
+        // 作用：<router-view>中访问了parent.$route，
+        // 其中$route是访问this._routerRoot._route，触发了_route的getter,对<router-view>有依赖
+        // 当跳转路由时updateRoute会修改history.current的值和在apps中所有实例的_route，
+        // 修改了_route就会触发setter,会通知<router-view>重新渲染组件
         Vue.util.defineReactive(this, '_route', this._router.history.current)
       } else {
         this._routerRoot = (this.$parent && this.$parent._routerRoot) || this

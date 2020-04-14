@@ -177,13 +177,22 @@ export class History {
       }
     }
     // 异步函数队列化执行
+    // 在失活的组件里调用离开守卫
+    // 调用全局的 beforeEach 守卫
+    // 在重用的组件里调用 beforeRouteUpdate 守卫
+    // 在激活的路由配置里调用 beforeEnter
+    // 解析异步路由组件
     runQueue(queue, iterator, () => {
       const postEnterCbs = []
       const isValid = () => this.current === route
       // wait until async components are resolved before
       // extracting in-component enter guards
+      // 提取组件中的 beforeRouteEnter 导航钩子函数
       const enterGuards = extractEnterGuards(activated, postEnterCbs, isValid)
+      // 将beforeResolve导航钩子合并
       const queue = enterGuards.concat(this.router.resolveHooks)
+      // 在被激活的组件里调用 beforeRouteEnter
+      // 调用全局的 beforeResolve 守卫
       runQueue(queue, iterator, () => {
         if (this.pending !== route) {
           return abort()
@@ -211,3 +220,9 @@ export class History {
   }
 }
 ```
+
+### hash
+
+### history
+
+### abstract
