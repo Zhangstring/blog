@@ -13,7 +13,7 @@ module.exports = {
     nav: [
       { text: 'webpack', link: '/webpack/' },
       { text: 'vue', link: '/vue/start/' },
-      { text: 'react', link: '/react/' }
+      { text: 'react', link: '/react/redux/' }
     ],
     sidebar: {
       '/webpack/': getSideBarChildren('webpack'),
@@ -47,6 +47,19 @@ module.exports = {
           {
             path: 'vuex',
             title: 'Vuex'
+          }
+        ]
+      }),
+      '/react/': getSideBarChildren({
+        path: 'react',
+        titles: [
+          {
+            path: 'redux',
+            title: 'Redux'
+          },
+          {
+            path: 'redux-thunk',
+            title: 'redux-thunk'
           }
         ]
       })
