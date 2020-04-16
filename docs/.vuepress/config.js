@@ -1,8 +1,8 @@
 const fs = require('fs')
 const path = require('path')
 module.exports = {
-  title: 'zxj blog',
-  description: 'my blog',
+  title: 'zxj 个人博客',
+  description: '记录平时的学习笔记',
   lang: 'zh-CN',
   markdown: {
     lineNumbers: true
@@ -13,7 +13,8 @@ module.exports = {
     nav: [
       { text: 'webpack', link: '/webpack/' },
       { text: 'vue', link: '/vue/start/' },
-      { text: 'react', link: '/react/redux/' }
+      { text: 'react', link: '/react/redux/' },
+      { text: '简历', link: 'https://resume.zhangxujun.cn' }
     ],
     sidebar: {
       '/webpack/': getSideBarChildren('webpack'),
