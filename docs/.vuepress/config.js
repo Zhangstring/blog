@@ -14,6 +14,15 @@ module.exports = {
       { text: 'webpack', link: '/webpack/' },
       { text: 'vue', link: '/vue/start/' },
       { text: 'react', link: '/react/redux/' },
+      {
+        text: '其他',
+        items: [
+          {
+            text: '前端性能优化',
+            link: '/note/optimize/'
+          }
+        ]
+      },
       { text: '简历', link: 'https://resume.zhangxujun.cn' }
     ],
     sidebar: {
@@ -63,6 +72,10 @@ module.exports = {
             title: 'redux-thunk'
           }
         ]
+      }),
+      '/note/optimize/': getSideBarChildren({
+        path: 'note/optimize',
+        title: '前端性能优化'
       })
     }
   },
